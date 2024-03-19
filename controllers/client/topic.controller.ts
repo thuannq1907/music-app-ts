@@ -6,5 +6,7 @@ export const index = async (req: Request, res: Response) => {
     deleted: false
   });
 
-  res.render("client/pages/topics/index");
+  res.render("client/pages/topics/index", {
+    pageTitle: "Chủ đề bài hát"
+  });
 }
