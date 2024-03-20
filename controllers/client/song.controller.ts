@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Topic from "../../models/topic.model";
 import Song from "../../models/song.model";
 import Singer from "../../models/singer.model";
+import FavoriteSong from "../../models/favorite-song.model";
 
 // [GET] /songs/:slugTopic
 export const list = async (req: Request, res: Response) => {
@@ -60,6 +61,15 @@ export const detail = async (req: Request, res: Response) => {
     deleted: false
   });
 
+  // trả ra bài hát ưa thích để hiển thị lên giao diện
+  const favoriteSong = await FavoriteSong.findOne({
+    userId: "",
+    songId: song.id
+  });
+
+  // check tồn tại favoriteSong thì trả về true, k thì false
+  song["isFavoriteSong"] = favoriteSong ? true : false;
+
   res.render("client/pages/songs/detail", {
     pageTitle: "Chi tiết bài hát",
     song: song,
@@ -100,3 +110,37 @@ export const like = async (req: Request, res: Response) => {
     like: updateLike
   });
 };
+
+// [PATCH] /songs/favorite/:type/:idSong
+export const favorite = async (req: Request, res: Response) => {
+  const idSong: string = req.params.idSong;
+  const type: string = req.params.type;
+
+  if(type == "yes") {
+    // tìm trong FavoriteSong có tồn tại bài hát có id được gửi lên k, có r thì thôi để đỡ lưu nhiều lần
+    const existRecord = await FavoriteSong.findOne({
+      userId: "",
+      songId: idSong,
+    });
+
+    // chưa có thì lưu vào database
+    if(!existRecord) {
+      const record = new FavoriteSong({
+        userId: "",
+        songId: idSong,
+      });
+      await record.save();
+    }
+  } else {
+    // type == "no" -> user muốn xóa bài hát khỏi danh sách ưa thích -> xóa id bài hát khỏi database luôn
+    await FavoriteSong.deleteOne({
+      userId: "",
+      songId: idSong
+    });
+  }
+
+  res.json({
+    code: 200,
+    message: "Thành công!"
+  });
+}

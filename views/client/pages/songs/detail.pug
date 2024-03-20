@@ -17,8 +17,8 @@ block main
               <i class="fa-solid fa-music"></i> #{topic.title}
             div(class="inner-action inner-like" button-like=song.id)
               <i class="fa-regular fa-thumbs-up"></i> 
-                span <span data-like>#{song.like}</span> thích
-            div(class="inner-action inner-heart")
+              span <span data-like>#{song.like}</span> thích
+            div(class=`inner-action inner-heart ${song.isFavoriteSong ? "active" : ""}` button-favorite=song.id)
               <i class="fa-regular fa-heart"></i> Bài hát yêu thích
 
           .inner-play
