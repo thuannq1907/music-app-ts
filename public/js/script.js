@@ -1,3 +1,4 @@
+// Play Audio
 const elementAplayer = document.getElementById('aplayer');
 
 if(elementAplayer) {
@@ -29,3 +30,36 @@ if(elementAplayer) {
     avatar.style.animationPlayState = "paused";
   });
 }
+// End Play Audio
+
+
+// Button Like
+const buttonLike = document.querySelector("[button-like]");
+if(buttonLike) {
+  // khi click vào buttonLike thì call đến api /songs/like/:type/:idSong 
+  buttonLike.addEventListener("click", () => {
+    // check xem button đó class active chưa, có r -> muốn bỏ like, chưa có -> muốn like
+    const isActive = buttonLike.classList.contains("active");
+
+    const typeLike = isActive ? "no" : "yes";
+
+    // lấy id bài hát thông qua thuộc tính button-like=song.id tự định nghĩa
+    const idSong = buttonLike.getAttribute("button-like");
+    const link = `/songs/like/${typeLike}/${idSong}`;
+
+    // call api
+    fetch(link, {
+      method: "PATCH"
+    })
+      .then(res => res.json())
+      .then(data => {
+        // update lại lượt like ngoài giao diện
+        const spanLike = buttonLike.querySelector("[data-like]");
+        spanLike.innerHTML = data.like;
+
+        // có r thì xóa, k có thì thêm vào
+        buttonLike.classList.toggle("active");
+      })
+  });
+}
+// End Button Like
