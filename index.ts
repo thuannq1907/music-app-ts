@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(methodOverride('_method'));
 
-app.set("views", "./views");
+app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 
 // TinyMCE
@@ -28,7 +28,7 @@ app.use(
 );
 // End TinyMCE
 
-app.use(express.static("public"));
+app.use(express.static(`${__dirname}/public`));
 
 // App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
