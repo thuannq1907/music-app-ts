@@ -37,6 +37,15 @@ export const create = async (req: Request, res: Response) => {
 
 // [POST] /admin/songs/create
 export const createPost = async (req: Request, res: Response) => {
+  // update lại key avatar và audio = phần tử đầu tiên trong mảng, chứ k để 1 mảng các link cloudinary
+  if(req.body.avatar) {
+    req.body.avatar = req.body.avatar[0];
+  }
+
+  if(req.body.audio) {
+    req.body.audio = req.body.audio[0];
+  }
+
   const song = new Song(req.body);
   await song.save();
 

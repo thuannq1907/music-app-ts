@@ -41,3 +41,30 @@ export const uploadSingle = async (req: Request, res: Response, next: NextFuncti
 
   next();
 };
+
+export const uploadFields = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // lặp qua 2 key avatar và audio, là 1 mảng các object
+    for (const key in req["files"]) {
+      // add 2 key avatar và audio vào req.body, mới đầu cho mảng rỗng sau đó mới push link vào
+      req.body[key] = [];
+
+      // lặp qua các thành phần có trong 2 key avatar và audio để lấy mã buffer
+      const array = req["files"][key];
+      for (const item of array) {
+        try {
+          // chuyển mã buffer vào Cloudinary để lấy link
+          const result = await uploadToCloudinary(item.buffer);
+          // push vào mảng rỗng vừa tạo phía trên
+          req.body[key].push(result);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  next();
+};
