@@ -102,3 +102,40 @@ if(listButtonFavorite.length > 0) {
   })
 }
 // End Button Favorite
+
+// Search 
+const inputSearch = document.querySelector(".box-search input[name='keyword']");
+if(inputSearch){
+  inputSearch.addEventListener("keyup", () => {
+    const value = inputSearch.value;
+    const link = `/search/keyword/${value}`;
+    const boxSearch = document.querySelector(".box-search form");
+    fetch(link, {
+      method: "GET"
+    })
+      .then(res => res.json())
+      .then(data => {
+        const songs = data.songs;
+        const boxResult = document.createElement("div");
+        boxResult.classList.add("box-result");
+        songs.forEach(song => {
+          const div = document.createElement("div");
+          div.innerHTML = `
+              <a href="/songs/detail/${song.slug}">${song.title}</a>
+          `;
+          boxResult.appendChild(div);
+        });
+        boxSearch.appendChild(boxResult);
+        const countBoxResult = document.querySelectorAll(".box-result");
+        for (var i = 0; i < countBoxResult.length; i++) {
+          if(i !== countBoxResult.length-1){
+            countBoxResult[i].remove();
+          }
+          setTimeout(() => {
+            countBoxResult[countBoxResult.length-1].remove();
+          }, 2000)
+        }
+      })
+  })
+}
+// End Search 

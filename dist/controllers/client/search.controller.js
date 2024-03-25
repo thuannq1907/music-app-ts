@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.result = void 0;
+exports.keyword = exports.result = void 0;
 const song_model_1 = __importDefault(require("../../models/song.model"));
 const singer_model_1 = __importDefault(require("../../models/singer.model"));
 const convert_to_slug_helper_1 = require("../../helpers/convert-to-slug.helper");
@@ -46,3 +46,33 @@ const result = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.result = result;
+const keyword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const keyword = req.params.value;
+    let songs = [];
+    if (keyword) {
+        const keywordRegex = new RegExp(keyword, "i");
+        const slug = (0, convert_to_slug_helper_1.convertToSlug)(keyword);
+        const keywordSlugRegex = new RegExp(slug, "i");
+        songs = yield song_model_1.default.find({
+            $or: [
+                { title: keywordRegex },
+                { slug: keywordSlugRegex },
+            ]
+        });
+        if (songs.length > 0) {
+            for (const song of songs) {
+                const infoSinger = yield singer_model_1.default.findOne({
+                    _id: song.singerId,
+                    deleted: false
+                });
+                song["infoSinger"] = infoSinger;
+            }
+        }
+    }
+    res.json({
+        code: 200,
+        message: "Thành công!",
+        songs: songs
+    });
+});
+exports.keyword = keyword;

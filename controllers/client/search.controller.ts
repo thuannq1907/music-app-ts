@@ -45,3 +45,40 @@ export const result = async (req: Request, res: Response) => {
     songs: songs
   });
 };
+
+// [GET] /search/keyword/:value
+export const keyword = async (req: Request, res: Response) => {
+  const keyword = req.params.value;
+  let songs = [];
+
+  if(keyword) {
+    const keywordRegex = new RegExp(keyword, "i");
+
+    const slug = convertToSlug(keyword);
+    const keywordSlugRegex = new RegExp(slug, "i");
+
+    songs = await Song.find({
+      $or: [
+        { title: keywordRegex },
+        { slug: keywordSlugRegex },
+      ]
+    });
+
+    if(songs.length > 0) {
+      for (const song of songs) {
+        const infoSinger = await Singer.findOne({
+          _id: song.singerId,
+          deleted: false
+        });
+
+        song["infoSinger"] = infoSinger;
+      }
+    }
+  }
+
+  res.json({
+    code: 200,
+    message: "Thành công!",
+    songs: songs
+  });
+};

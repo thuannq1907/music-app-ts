@@ -28,4 +28,5 @@ const express_1 = require("express");
 const router = (0, express_1.Router)();
 const controller = __importStar(require("../../controllers/client/search.controller"));
 router.get("/result", controller.result);
+router.get("/keyword/:value", controller.keyword);
 exports.searchRoutes = router;
